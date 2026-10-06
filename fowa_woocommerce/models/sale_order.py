@@ -15,7 +15,10 @@ class SaleOrder(models.Model):
     woo_number = fields.Char("Website Order #", copy=False)
     woo_status = fields.Char("Website Status", copy=False)
 
-    _sql_constraints = [('woo_id_uniq', 'unique(woo_id)', "This WooCommerce order is already imported.")]
+    if hasattr(models, 'Constraint'):  # Odoo 19+
+        _woo_id_uniq = models.Constraint('unique(woo_id)', "This WooCommerce order is already imported.")
+    else:
+        _sql_constraints = [('woo_id_uniq', 'unique(woo_id)', "This WooCommerce order is already imported.")]
 
     @api.model
     def _cron_woo_pull_orders(self):

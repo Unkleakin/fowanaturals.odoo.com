@@ -1,6 +1,6 @@
 # fowanaturals.odoo.com
 
-Odoo.sh repository (assumes Odoo 17.0). Contains `fowa_woocommerce`, a connector to the WooCommerce store at https://fowanaturals.com.
+Odoo.sh repository (targets Odoo 20.0; written without access to a running Odoo, so test on staging first). Contains `fowa_woocommerce`, a connector to the WooCommerce store at https://fowanaturals.com.
 
 ## What it does
 | Flow | Direction | Trigger |

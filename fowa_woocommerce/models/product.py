@@ -17,6 +17,19 @@ class ProductTemplate(models.Model):
     woo_id = fields.Char("WooCommerce ID", copy=False, index=True)
     woo_publish_stock = fields.Boolean("Publish Stock to Website", default=True)
 
+    # Odoo 18+ replaced detailed_type='product' with type='consu' + is_storable.
+    @api.model
+    def _woo_stockable_vals(self):
+        if 'is_storable' in self._fields:
+            return {'type': 'consu', 'is_storable': True}
+        return {'detailed_type': 'product'}
+
+    @api.model
+    def _woo_stockable_domain(self):
+        if 'is_storable' in self._fields:
+            return [('is_storable', '=', True)]
+        return [('detailed_type', '=', 'product')]
+
     # ---- Woo -> Odoo -------------------------------------------------
     @api.model
     def _cron_woo_pull_products(self):
@@ -43,7 +56,7 @@ class ProductTemplate(models.Model):
             'list_price': float(wp.get('regular_price') or wp.get('price') or 0),
             'description_sale': wp.get('short_description') or False,
             'sale_ok': True,
-            'detailed_type': 'product',
+            **self._woo_stockable_vals(),
         }
         if tmpl:
             # Odoo owns name/price once the product exists; only link IDs.
@@ -60,7 +73,7 @@ class ProductTemplate(models.Model):
         wh_id = int(icp.get_param('fowa_woo.warehouse_id') or 0)
         Api = self.env['fowa.woo.api']
         products = self.search([('woo_id', '!=', False), ('woo_publish_stock', '=', True),
-                                ('detailed_type', '=', 'product')])
+                                *self._woo_stockable_domain()])
         for tmpl in products:
             prod = tmpl.product_variant_id.with_context(warehouse=wh_id) if wh_id else tmpl.product_variant_id
             qty = max(int(prod.free_qty), 0)

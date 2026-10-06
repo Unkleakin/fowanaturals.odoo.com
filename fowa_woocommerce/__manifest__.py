@@ -1,6 +1,6 @@
 {
     'name': 'Fowa Naturals WooCommerce Connector',
-    'version': '17.0.1.0.0',
+    'version': '20.0.1.0.0',
     'summary': 'Sync products, stock, customers and orders with fowanaturals.com (WooCommerce)',
     'category': 'Sales',
     'depends': ['sale_management', 'stock', 'account'],
